@@ -1,0 +1,1 @@
+export const HISTORY_ITEMS = 'search-x-history'

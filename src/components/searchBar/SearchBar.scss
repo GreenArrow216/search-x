@@ -60,11 +60,12 @@
     border-radius: 0 0 20px 20px;
     // padding-top: 10px;
     // top: 32px;
-    div {
+    > div {
       padding: 4px 0px;
     }
     .history {
       color: purple;
+      justify-content: space-between;
     }
     .active {
       background-color: #ececec;
@@ -85,7 +86,11 @@
         padding:10px;
         display: flex;
         align-items: center;
-        svg {
+        & > div {
+            display: flex;
+            cursor: pointer;
+        }
+        .feather {
             margin-left: 10px
         }
         p {

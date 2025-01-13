@@ -4,11 +4,17 @@ import { DataType, fakeDB } from "../../utils/fakeDb";
 import "./SearchBar.scss";
 import { useNavigate } from "react-router";
 import SearchIcon from "../icons/SearchIcon";
+import TrashIcon from "../icons/TrashIcon";
+import HistoryIcon from "../icons/HistoryIcon";
+import { HISTORY_ITEMS } from "../../utils/constants";
 
 const SearchBar = () => {
+
+  const historyItems = JSON.parse(localStorage.getItem(HISTORY_ITEMS) ?? '[]')
+
   const [query, setQuery] = useState<string>("");
   const [suggestions, setSuggestions] = useState<DataType[]>([]);
-  const [searchHistory, setSearchHistory] = useState<string[]>([]);
+  const [searchHistory, setSearchHistory] = useState<number[]>(historyItems);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const navigate = useNavigate();
 
@@ -16,14 +22,18 @@ const SearchBar = () => {
     document.getElementById("searchInput")?.focus();
   }, []);
 
+  useEffect(() => {
+    filterQueriedFromDB({ value: query });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
+
+  useEffect(() => {
+    localStorage.setItem(HISTORY_ITEMS, JSON.stringify(searchHistory))
+  }, [searchHistory])
+
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setQuery(value);
-
-    const matches = fakeDB.filter((item) =>
-      item.title.toLowerCase().startsWith(value.toLowerCase())
-    );
-    setSuggestions(matches.slice(0, 10));
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -40,25 +50,37 @@ const SearchBar = () => {
     }
   };
 
-  const filterQueriedFromDB = () => {
+  const filterQueriedFromDB = ({ value = query }: { value?: string }) => {
     const matches = fakeDB.filter((item) =>
-      item.title.toLowerCase().includes(query.toLowerCase())
+      item.title.toLowerCase().includes(value.toLowerCase())
     );
     setSuggestions(matches.slice(0, 10));
   };
 
-  const removeFromHistory = (item: string) => {
-    setSearchHistory(searchHistory.filter((h) => h !== item));
+  const removeFromHistory = (id: number) => {
+    const newHistory = searchHistory.filter((h) => h !== id)
+    setSearchHistory(newHistory);
   };
 
   const onSuggestionClick = (id: number) => {
     const item = fakeDB.find((db) => db.id === id);
+    if (item?.id && !searchHistory.includes(item.id)) {
+      const newHistory = [...searchHistory, item?.id];
+      setSearchHistory(newHistory);
+    }
     if (item) {
-      navigate(item.title);
+      console.log('navigate')
+      navigate(item.id);
     } else {
       console.log("url not found in the db");
     }
   };
+
+  const isAlreadySearched = (id: number) => {
+    return searchHistory.includes(id);
+  };
+
+  console.log({ searchHistory });
 
   const showSuggestions = suggestions.length > 0 && query.length > 0;
 
@@ -79,7 +101,7 @@ const SearchBar = () => {
           // onBlur={() => setSuggestions([])}
           onFocus={() => {
             if (query) {
-              filterQueriedFromDB();
+              filterQueriedFromDB({ value: query });
             }
           }}
         />
@@ -92,15 +114,26 @@ const SearchBar = () => {
                 key={item.id}
                 className={`autocomplete-item ${
                   index === activeIndex ? "active" : ""
-                } ${searchHistory.includes(item.title) ? "history" : ""}`}
+                } ${isAlreadySearched(item.id) ? "history" : ""}`}
                 onClick={() => onSuggestionClick(item.id)}
               >
-                <SearchIcon color={"#868686"} boxSize={20} />
-                <p>{item.title}</p>
-                {searchHistory.includes(item.title) && (
-                  <button onClick={() => removeFromHistory(item.title)}>
-                    Remove
-                  </button>
+                <div>
+                  {isAlreadySearched(item.id) ? (
+                    <HistoryIcon color="#868686" boxSize={20} />
+                  ) : (
+                    <SearchIcon color={"#868686"} boxSize={20} />
+                  )}
+                  <p>{item.title}</p>
+                </div>
+                {isAlreadySearched(item.id) && (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFromHistory(item.id);
+                    }}
+                  >
+                    <TrashIcon color="red" boxSize={20} />
+                  </div>
                 )}
               </div>
             ))}
