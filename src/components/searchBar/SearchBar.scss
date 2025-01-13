@@ -1,0 +1,99 @@
+.search-bar {
+  position: relative;
+  width:40%;
+
+  .search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    border-radius: 25px;
+    padding: 5px 15px;
+    &.focused {
+      border-radius: 25px 25px 0 0;
+    }
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 50px;
+  }
+
+  .search-input::placeholder {
+    color: #b0b0b0;
+  }
+
+  .search-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 18px;
+    color: #5f6368;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-button:hover {
+    color: #000;
+  }
+
+  .search-container:focus-within {
+    box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .search-input:focus {
+    outline: none;
+  }
+
+  .autocomplete {
+    background-color: white;
+    width: 100%;
+    position: absolute;
+    text-align: left;
+    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
+    border-radius: 0 0 20px 20px;
+    // padding-top: 10px;
+    // top: 32px;
+    div {
+      padding: 4px 0px;
+    }
+    .history {
+      color: purple;
+    }
+    .active {
+      background-color: #ececec;
+      position: relative;
+      &::before {
+        content: "";
+        position: absolute;
+        width: 4px;
+        height: 100%;
+        background-color: #1818f79c; /* Add a visible color */
+        left: 0; /* Align to the left */
+        top: 0;
+        z-index: 1;
+        border-radius: 0 3px 3px 0;
+      }
+    }
+    .autocomplete-item {
+        padding:10px;
+        display: flex;
+        align-items: center;
+        svg {
+            margin-left: 10px
+        }
+        p {
+            margin-left:18px
+        }
+        &:hover {
+            background-color: #ececec;
+        }
+    }
+  }
+}
