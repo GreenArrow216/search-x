@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DataType, fakeDB } from "../../utils/fakeDb";
 
 import "./SearchBar.scss";
@@ -8,15 +8,17 @@ import TrashIcon from "../icons/TrashIcon";
 import HistoryIcon from "../icons/HistoryIcon";
 import { HISTORY_ITEMS } from "../../utils/constants";
 
-const SearchBar = () => {
+const SearchBar = ({defaultQuery=''}:{defaultQuery?:string}) => {
+  const historyItems = JSON.parse(localStorage.getItem(HISTORY_ITEMS) ?? "[]");
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
-  const historyItems = JSON.parse(localStorage.getItem(HISTORY_ITEMS) ?? '[]')
-
-  const [query, setQuery] = useState<string>("");
+  const [query, setQuery] = useState<string>(defaultQuery);
   const [suggestions, setSuggestions] = useState<DataType[]>([]);
   const [searchHistory, setSearchHistory] = useState<number[]>(historyItems);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
-  const navigate = useNavigate();
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  
 
   useEffect(() => {
     document.getElementById("searchInput")?.focus();
@@ -28,13 +30,8 @@ const SearchBar = () => {
   }, [query]);
 
   useEffect(() => {
-    localStorage.setItem(HISTORY_ITEMS, JSON.stringify(searchHistory))
-  }, [searchHistory])
-
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setQuery(value);
-  };
+    localStorage.setItem(HISTORY_ITEMS, JSON.stringify(searchHistory));
+  }, [searchHistory]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "ArrowDown") {
@@ -46,7 +43,7 @@ const SearchBar = () => {
         prevIndex > 0 ? prevIndex - 1 : suggestions.length - 1
       );
     } else if (e.key === "Enter" && activeIndex >= 0) {
-      console.log("enter pressed");
+      navigate(`/search?q=${query}`)
     }
   };
 
@@ -58,7 +55,7 @@ const SearchBar = () => {
   };
 
   const removeFromHistory = (id: number) => {
-    const newHistory = searchHistory.filter((h) => h !== id)
+    const newHistory = searchHistory.filter((historyId) => historyId !== id);
     setSearchHistory(newHistory);
   };
 
@@ -69,8 +66,7 @@ const SearchBar = () => {
       setSearchHistory(newHistory);
     }
     if (item) {
-      console.log('navigate')
-      navigate(item.id);
+      navigate(`/search?q=${item.title}`);
     } else {
       console.log("url not found in the db");
     }
@@ -80,12 +76,27 @@ const SearchBar = () => {
     return searchHistory.includes(id);
   };
 
-  console.log({ searchHistory });
+  const handleOutsideClick = (e: MouseEvent) => {
+    if (
+      searchBarRef.current &&
+      !searchBarRef.current.contains(e.target as Node)
+    ) {
+      setIsFocused(false); // Close suggestions when clicking outside
+    }
+  };
 
-  const showSuggestions = suggestions.length > 0 && query.length > 0;
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
+  const suggestionsPresent = suggestions.length > 0 && query.length > 0;
+  const showSuggestions = isFocused && suggestionsPresent;
 
   return (
-    <div className="search-bar">
+    <div className="search-bar" ref={searchBarRef}>
       <div className={`search-container ${showSuggestions ? "focused" : ""}`}>
         <button className="search-button">
           <SearchIcon color={"#868686"} />
@@ -96,50 +107,51 @@ const SearchBar = () => {
           placeholder="Search Google or type a URL"
           id="searchInput"
           value={query}
-          onChange={handleInput}
+          onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => handleKeyDown(e)}
-          // onBlur={() => setSuggestions([])}
           onFocus={() => {
+            setIsFocused(true);
             if (query) {
               filterQueriedFromDB({ value: query });
             }
           }}
         />
       </div>
-      {showSuggestions && (
-        <div className="autocomplete">
-          <div>
-            {suggestions.map((item, index) => (
-              <div
-                key={item.id}
-                className={`autocomplete-item ${
-                  index === activeIndex ? "active" : ""
-                } ${isAlreadySearched(item.id) ? "history" : ""}`}
-                onClick={() => onSuggestionClick(item.id)}
-              >
-                <div>
-                  {isAlreadySearched(item.id) ? (
-                    <HistoryIcon color="#868686" boxSize={20} />
-                  ) : (
-                    <SearchIcon color={"#868686"} boxSize={20} />
-                  )}
-                  <p>{item.title}</p>
-                </div>
-                {isAlreadySearched(item.id) && (
-                  <div
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeFromHistory(item.id);
-                    }}
-                  >
-                    <TrashIcon color="red" boxSize={20} />
-                  </div>
+      <div className={`autocomplete ${showSuggestions ? "show" : "hide"}`}>
+        <div>
+          {suggestions.map((item, index) => (
+            <div
+              key={item.id}
+              className={`autocomplete-item ${
+                index === activeIndex ? "active" : ""
+              } ${isAlreadySearched(item.id) ? "history" : ""}`}
+            >
+              <div>
+                {isAlreadySearched(item.id) ? (
+                  <HistoryIcon color="#868686" boxSize={20} />
+                ) : (
+                  <SearchIcon color={"#868686"} boxSize={20} />
                 )}
+                <p onMouseDown={() => onSuggestionClick(item.id)}>
+                  {item.title}
+                </p>
               </div>
-            ))}
-          </div>
+              {isAlreadySearched(item.id) && (
+                <div
+                  onMouseDown={(e) => {
+                    e.stopPropagation();
+                    setIsFocused(true);
+                    removeFromHistory(item.id);
+                  }}
+                  className={"delete-btn"}
+                >
+                  <TrashIcon color="red" boxSize={20} />
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
