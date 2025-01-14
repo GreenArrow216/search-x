@@ -1,6 +1,6 @@
 .search-bar {
   position: relative;
-  width:40%;
+  width: 40%;
 
   .search-container {
     position: relative;
@@ -86,23 +86,23 @@
       }
     }
     .autocomplete-item {
-        padding:10px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      & > div {
         display: flex;
         align-items: center;
-        & > div {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-        .feather {
-            margin-left: 10px
-        }
-        p {
-            margin-left:18px
-        }
-        &:hover {
-            background-color: #ececec;
-        }
+        cursor: pointer;
+      }
+      .feather {
+        margin-left: 10px;
+      }
+      p {
+        margin-left: 18px;
+      }
+      &:hover {
+        background-color: #ececec;
+      }
     }
   }
 }
