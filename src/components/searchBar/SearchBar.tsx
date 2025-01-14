@@ -2,26 +2,35 @@ import { useState, useEffect, useRef } from "react";
 import { DataType, fakeDB } from "../../utils/fakeDb";
 
 import "./SearchBar.scss";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import SearchIcon from "../icons/SearchIcon";
 import TrashIcon from "../icons/TrashIcon";
 import HistoryIcon from "../icons/HistoryIcon";
 import { HISTORY_ITEMS } from "../../utils/constants";
 
-const SearchBar = ({defaultQuery=''}:{defaultQuery?:string}) => {
+const SearchBar = ({
+  defaultQuery = "",
+  updateQuery,
+}: {
+  defaultQuery?: string;
+  updateQuery?: (arg: string) => void;
+}) => {
   const historyItems = JSON.parse(localStorage.getItem(HISTORY_ITEMS) ?? "[]");
   const searchBarRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [query, setQuery] = useState<string>(defaultQuery);
   const [suggestions, setSuggestions] = useState<DataType[]>([]);
   const [searchHistory, setSearchHistory] = useState<number[]>(historyItems);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  
 
   useEffect(() => {
-    document.getElementById("searchInput")?.focus();
+    if (!location.pathname.includes("search")) {
+      document.getElementById("searchInput")?.focus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -42,8 +51,25 @@ const SearchBar = ({defaultQuery=''}:{defaultQuery?:string}) => {
       setActiveIndex((prevIndex) =>
         prevIndex > 0 ? prevIndex - 1 : suggestions.length - 1
       );
-    } else if (e.key === "Enter" && activeIndex >= 0) {
-      navigate(`/search?q=${query}`)
+    } else if (e.key === "Enter") {
+      setIsFocused(false);
+      document.getElementById("searchInput")?.blur();
+      if (activeIndex === -1) {
+        navigate(`/search?q=${query}`);
+        if (updateQuery) {
+          updateQuery(query);
+        }
+      } else if (activeIndex > -1) {
+        if (!searchHistory.includes(suggestions[activeIndex].id)) {
+          const newHistory = [...searchHistory, suggestions[activeIndex]?.id];
+          setSearchHistory(newHistory);
+        }
+        if (updateQuery) {
+          updateQuery(suggestions[activeIndex].title);
+        }
+        setQuery(suggestions[activeIndex].title);
+        navigate(`/search?q=${suggestions[activeIndex].title}`);
+      }
     }
   };
 
@@ -67,6 +93,10 @@ const SearchBar = ({defaultQuery=''}:{defaultQuery?:string}) => {
     }
     if (item) {
       navigate(`/search?q=${item.title}`);
+      document.getElementById("searchInput")?.blur();
+      if (updateQuery) {
+        updateQuery(item.title);
+      }
     } else {
       console.log("url not found in the db");
     }
@@ -81,7 +111,7 @@ const SearchBar = ({defaultQuery=''}:{defaultQuery?:string}) => {
       searchBarRef.current &&
       !searchBarRef.current.contains(e.target as Node)
     ) {
-      setIsFocused(false); // Close suggestions when clicking outside
+      setIsFocused(false);
     }
   };
 
@@ -94,6 +124,14 @@ const SearchBar = ({defaultQuery=''}:{defaultQuery?:string}) => {
 
   const suggestionsPresent = suggestions.length > 0 && query.length > 0;
   const showSuggestions = isFocused && suggestionsPresent;
+
+  console.log({
+    showSuggestions,
+    isFocused,
+    suggestionsPresent,
+    suggestions,
+    query,
+  });
 
   return (
     <div className="search-bar" ref={searchBarRef}>

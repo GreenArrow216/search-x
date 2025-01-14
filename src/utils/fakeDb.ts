@@ -3,6 +3,8 @@ export type DataType = {
   title: string;
   description: string;
   url: string;
+  site: string;
+  image: string; // Added image field
 };
 
 export const fakeDB: DataType[] = [
@@ -11,162 +13,239 @@ export const fakeDB: DataType[] = [
     title: "ReactJS Tutorial",
     description: "Learn ReactJS from scratch.",
     url: "https://reactjs.org/",
+    site: "React JS",
+    image: "https://reactjs.org/logo-og.png",
   },
   {
     id: 2,
-    title: "JavaScript Basics",
-    description: "Understand JavaScript fundamentals.",
-    url: "https://javascript.info/",
+    title: "Redux Toolkit Guide",
+    description: "Master state management with Redux Toolkit.",
+    url: "https://redux-toolkit.js.org/",
+    site: "Redux",
+    image: "https://redux-toolkit.js.org/img/redux-logo-landscape.png",
   },
   {
     id: 3,
-    title: "React Router",
-    description: "Guide to React Router.",
-    url: "https://reactrouter.com/",
+    title: "Regular Expressions 101",
+    description: "Learn regex easily.",
+    url: "https://regex101.com/",
+    site: "Regex",
+    image: "https://reactjs.org/logo-og.png",
   },
   {
     id: 4,
-    title: "Frontend Development",
-    description: "All about frontend development.",
-    url: "https://frontendmasters.com/",
+    title: "Responsive Web Design",
+    description: "Understand the principles of responsive design.",
+    url: "https://web.dev/responsive-web-design-basics/",
+    site: "Web Dev",
+    image: "https://redux-toolkit.js.org/img/redux-logo-landscape.png",
   },
   {
     id: 5,
-    title: "Airbnb",
-    description:
-      "Book Your Stay Today — Escape To Anywhere, Anytime on Airbnb. Explore 6+ Million Homes & Book Your Perfect Stay.",
-    url: "https://www.airbnb.co.uk/",
+    title: "React Native Basics",
+    description: "Introduction to React Native.",
+    url: "https://reactnative.dev/docs/getting-started",
+    site: "React Native",
+    image: "https://reactnative.dev/img/header_logo.svg",
   },
   {
     id: 6,
-    title: "OpenAI",
-    description:
-      "We believe our research will eventually lead to artificial general intelligence,",
-    url: "https://openai.com/",
+    title: "React Router Docs",
+    description: "Navigate your React apps.",
+    url: "https://reactrouter.com/",
+    site: "React Router",
+    image: "https://reactjs.org/logo-og.png",
   },
   {
     id: 7,
-    title: "React",
-    description:
-      "React is the library for web and native user interfaces. Build user interfaces out of individual pieces called components written in JavaScript.",
-    url: "https://react.dev/",
+    title: "Redux Saga Basics",
+    description: "Manage side effects with Redux Saga.",
+    url: "https://redux-saga.js.org/",
+    site: "Redux Saga",
+    image: "https://redux-saga.js.org/img/Redux-Saga-Logo.png",
   },
   {
     id: 8,
-    title: "React - Wiki",
-    description:
-      "React is a free and open-source front-end JavaScript library that aims to make building user interfaces based on components more seamless.",
-    url: "https://en.wikipedia.org/wiki/React_(software)",
+    title: "Regular Expressions for Developers",
+    description: "A practical guide to regex.",
+    url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions",
+    site: "MDN",
+    image: "https://developer.mozilla.org/favicon.ico",
   },
   {
     id: 9,
-    title: "React - W3",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "https://www.w3schools.com/REACT/DEFAULT.ASP",
+    title: "Rest API Design",
+    description: "Best practices for REST API design.",
+    url: "https://restfulapi.net/",
+    site: "REST API",
+    image: "https://restfulapi.net/favicon.ico",
   },
   {
     id: 10,
-    title: "React - sample 1",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "React Context API",
+    description: "Use React's Context API effectively.",
+    url: "https://reactjs.org/docs/context.html",
+    site: "React JS",
+    image: "https://reactjs.org/logo-og.png",
   },
   {
     id: 11,
-    title: "React - sample 12",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "Responsive CSS Frameworks",
+    description: "Explore responsive CSS frameworks.",
+    url: "https://getbootstrap.com/",
+    site: "Bootstrap",
+    image: "https://getbootstrap.com/docs/5.3/assets/img/favicons/favicon.ico",
   },
   {
     id: 12,
-    title: "React - sample 13",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "Redux vs MobX",
+    description: "Compare state management tools.",
+    url: "https://redux.js.org/introduction/why-redux",
+    site: "Redux",
+    image: "https://redux.js.org/img/redux-logo-landscape.png",
   },
   {
     id: 13,
-    title: "React - sample 14",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "Restful Web Services",
+    description: "Learn about RESTful services.",
+    url: "https://www.restapitutorial.com/",
+    site: "REST",
+    image: "https://redux.js.org/img/redux-logo-landscape.png",
   },
   {
     id: 14,
-    title: "React - sample 15",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "React Component Patterns",
+    description: "Learn React component patterns.",
+    url: "https://reactpatterns.com/",
+    site: "React Patterns",
+    image: "https://reactpatterns.com/favicon.ico",
   },
   {
     id: 15,
-    title: "React - sample 16",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "Reduce Method in JavaScript",
+    description: "Master JavaScript's reduce method.",
+    url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce",
+    site: "MDN",
+    image: "https://developer.mozilla.org/favicon.ico",
   },
   {
     id: 16,
-    title: "React - sample 17",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "JavaScript Basics",
+    description: "Understand JavaScript fundamentals.",
+    url: "https://javascript.info/",
+    site: "Javascript",
+    image: "https://javascript.info/img/favicon.png",
   },
   {
     id: 17,
-    title: "React - sample 18",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "VueJS Guide",
+    description: "The complete guide to Vue.js.",
+    url: "https://vuejs.org/",
+    site: "VueJS",
+    image: "https://vuejs.org/images/logo.png",
   },
   {
     id: 18,
-    title: "React - sample 19",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "Angular Basics",
+    description: "Learn Angular step-by-step.",
+    url: "https://angular.io/",
+    site: "Angular",
+    image: "https://angular.io/assets/images/favicons/favicon.ico",
   },
   {
     id: 19,
-    title: "React - sample 20",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "Node.js Documentation",
+    description: "Explore Node.js docs.",
+    url: "https://nodejs.org/en/docs/",
+    site: "Node.js",
+    image: "https://nodejs.org/static/images/favicons/favicon.ico",
   },
   {
     id: 20,
-    title: "React - sample 21",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "Python for Beginners",
+    description: "Learn Python from scratch.",
+    url: "https://www.python.org/",
+    site: "Python",
+    image: "https://www.python.org/static/favicon.ico",
   },
   {
     id: 21,
-    title: "React - sample 22",
-    description:
-      "React is a JavaScript library for building user interfaces. React is used to build single-page applications. React allows us to create reusable UI components.",
-    url: "http://cake.sample.info/",
+    title: "CSS Grid Layout",
+    description: "Learn CSS Grid layout system.",
+    url: "https://css-tricks.com/snippets/css/complete-guide-grid/",
+    site: "CSS Tricks",
+    image: "https://css-tricks.com/apple-touch-icon.png",
+  },
+  {
+    id: 22,
+    title: "TypeScript Handbook",
+    description: "Learn TypeScript with examples.",
+    url: "https://www.typescriptlang.org/docs/handbook/intro.html",
+    site: "TypeScript",
+    image: "https://www.typescriptlang.org/icons/icon-48x48.png",
+  },
+  {
+    id: 23,
+    title: "HTML Basics",
+    description: "Start with HTML basics.",
+    url: "https://developer.mozilla.org/en-US/docs/Web/HTML",
+    site: "MDN",
+    image: "https://developer.mozilla.org/favicon.ico",
+  },
+  {
+    id: 24,
+    title: "CSS Tricks",
+    description: "Explore CSS tips and tricks.",
+    url: "https://css-tricks.com/",
+    site: "CSS Tricks",
+    image: "https://css-tricks.com/apple-touch-icon.png",
+  },
+  {
+    id: 25,
+    title: "GraphQL Official Guide",
+    description: "Learn GraphQL API design.",
+    url: "https://graphql.org/",
+    site: "GraphQL",
+    image: "https://graphql.org/img/favicon.png",
+  },
+  {
+    id: 26,
+    title: "Svelte Framework Guide",
+    description: "Introduction to Svelte.",
+    url: "https://svelte.dev/",
+    site: "Svelte",
+    image: "https://svelte.dev/favicon.png",
+  },
+  {
+    id: 27,
+    title: "Django for Beginners",
+    description: "Start building apps with Django.",
+    url: "https://www.djangoproject.com/",
+    site: "Django",
+    image: "https://www.djangoproject.com/favicon.ico",
+  },
+  {
+    id: 28,
+    title: "Flask Quickstart",
+    description: "Learn Flask basics.",
+    url: "https://flask.palletsprojects.com/en/2.0.x/quickstart/",
+    site: "Flask",
+    image: "https://flask.palletsprojects.com/favicon.ico",
+  },
+  {
+    id: 29,
+    title: "Git Basics",
+    description: "Learn Git version control.",
+    url: "https://git-scm.com/doc",
+    site: "Git",
+    image: "https://git-scm.com/favicon.ico",
+  },
+  {
+    id: 30,
+    title: "Docker Essentials",
+    description: "Understand Docker fundamentals.",
+    url: "https://www.docker.com/",
+    site: "Docker",
+    image: "https://www.docker.com/favicon.ico",
   },
 ];
-
-// http://cake.sample.info/
-// https://www.sample.org/?pizzas=crib
-// https://sample.net/kiss?hall=thing
-// http://sample.net/?bell=measure&push=orange#meal
-// http://www.sample.edu/?horses=tiger&weather=death#stretch
-// http://www.sample.org/flavor.html
-// http://sample.com/?belief=jellyfish&payment=fog
-// https://sample.info/
-// https://sample.net/legs?hospital=nut
-// http://sample.org/?drink=sofa
-// https://www.sample.info/#cap
-// https://sample.edu/lip#rain
-// https://sample.info/vacation
-// https://www.sample.info/?impulse=building
-// http://www.sample.com/mark
-// https://rabbit.sample.edu/friend/girl.aspx
-// http://www.sample.org/#scarecrow
-// https://sample.net/?front=vase&pail=ladybug
-// https://sample.com/deer.html
