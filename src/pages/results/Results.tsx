@@ -31,11 +31,14 @@ const Results = () => {
   //USEEFFECTS
   useEffect(() => {
     // to trigger the api and note the time
-    const startApiTime = performance.now();
-    trigger();
-    const endApiTime = performance.now();
+    const measureApiTime = async() => {
+      const startApiTime = performance.now();
+      await trigger();
+      const endApiTime = performance.now();
+      setApiLoadingTime(endApiTime - startApiTime);
+    }
 
-    setApiLoadingTime(endApiTime - startApiTime);
+    measureApiTime()   
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
