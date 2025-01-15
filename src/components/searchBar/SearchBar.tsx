@@ -43,33 +43,40 @@ const SearchBar = ({
   }, [searchHistory]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!suggestionsPresent && query.trim() === "") return;
+
     if (e.key === "ArrowDown") {
-      setActiveIndex((prevIndex) =>
-        prevIndex < suggestions.length - 1 ? prevIndex + 1 : 0
-      );
+      setActiveIndex((prevIndex) => (prevIndex + 1) % (suggestions.length + 1));
     } else if (e.key === "ArrowUp") {
       setActiveIndex((prevIndex) =>
-        prevIndex > 0 ? prevIndex - 1 : suggestions.length - 1
+        prevIndex === 0 ? suggestions.length : prevIndex - 1
       );
     } else if (e.key === "Enter") {
-      setIsFocused(false);
-      document.getElementById("searchInput")?.blur();
-      if (activeIndex === -1) {
+      e.preventDefault();
+
+      if (activeIndex === 0) {
+        // Enter pressed on the query itself
         navigate(`/search?q=${query}`);
         if (updateQuery) {
           updateQuery(query);
         }
-      } else if (activeIndex > -1) {
-        if (!searchHistory.includes(suggestions[activeIndex].id)) {
-          const newHistory = [...searchHistory, suggestions[activeIndex]?.id];
-          setSearchHistory(newHistory);
+      } else if (activeIndex > 0) {
+        // Enter pressed on a suggestion
+        const selectedSuggestion = suggestions[activeIndex - 1];
+        if (selectedSuggestion) {
+          if (!searchHistory.includes(selectedSuggestion.id)) {
+            const newHistory = [...searchHistory, selectedSuggestion.id];
+            setSearchHistory(newHistory);
+          }
+          if (updateQuery) {
+            updateQuery(selectedSuggestion.title);
+          }
+          setQuery(selectedSuggestion.title);
+          navigate(`/search?q=${selectedSuggestion.title}`);
         }
-        if (updateQuery) {
-          updateQuery(suggestions[activeIndex].title);
-        }
-        setQuery(suggestions[activeIndex].title);
-        navigate(`/search?q=${suggestions[activeIndex].title}`);
       }
+      setIsFocused(false);
+      document.getElementById("searchInput")?.blur();
     }
   };
 
@@ -125,14 +132,6 @@ const SearchBar = ({
   const suggestionsPresent = suggestions.length > 0 && query.length > 0;
   const showSuggestions = isFocused && suggestionsPresent;
 
-  console.log({
-    showSuggestions,
-    isFocused,
-    suggestionsPresent,
-    suggestions,
-    query,
-  });
-
   return (
     <div className="search-bar" ref={searchBarRef}>
       <div className={`search-container ${showSuggestions ? "focused" : ""}`}>
@@ -145,7 +144,10 @@ const SearchBar = ({
           placeholder="Search Google or type a URL"
           id="searchInput"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => {
+            setActiveIndex(0);
+            setQuery(e.target.value);
+          }}
           onKeyDown={(e) => handleKeyDown(e)}
           onFocus={() => {
             setIsFocused(true);
@@ -157,7 +159,7 @@ const SearchBar = ({
       </div>
       <div className={`autocomplete ${showSuggestions ? "show" : "hide"}`}>
         <div>
-          {suggestions.map((item, index) => (
+          {[{ id: -1, title: query }, ...suggestions].map((item, index) => (
             <div
               key={item.id}
               className={`autocomplete-item ${
@@ -165,7 +167,9 @@ const SearchBar = ({
               } ${isAlreadySearched(item.id) ? "history" : ""}`}
             >
               <div>
-                {isAlreadySearched(item.id) ? (
+                {item.id === -1 ? (
+                  <SearchIcon color={"#868686"} boxSize={20} />
+                ) : isAlreadySearched(item.id) ? (
                   <HistoryIcon color="#868686" boxSize={20} />
                 ) : (
                   <SearchIcon color={"#868686"} boxSize={20} />
@@ -174,11 +178,10 @@ const SearchBar = ({
                   {item.title}
                 </p>
               </div>
-              {isAlreadySearched(item.id) && (
+              {isAlreadySearched(item.id) && item.id !== -1 && (
                 <div
                   onMouseDown={(e) => {
                     e.stopPropagation();
-                    setIsFocused(true);
                     removeFromHistory(item.id);
                   }}
                   className={"delete-btn"}

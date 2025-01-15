@@ -1,3 +1,6 @@
+@use "../../styles/variables" as *;
+
+
 .search-bar {
   position: relative;
   width: 40%;
@@ -8,8 +11,8 @@
     align-items: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     background-color: #fff;
-    border-radius: 25px;
-    padding: 5px 15px;
+    border-radius: $spacing * 6;
+    padding: $spacing $spacing-large;
     &.focused {
       border-radius: 25px 25px 0 0;
     }
@@ -19,28 +22,26 @@
     flex: 1;
     border: none;
     outline: none;
-    padding: 10px 15px;
-    font-size: 16px;
-    border-radius: 50px;
+    padding: $spacing-medium $spacing-large;
+    font-size: $font-size-large;
   }
 
   .search-input::placeholder {
-    color: #b0b0b0;
+    color: $grey-color;
   }
 
   .search-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    padding: 5px;
-    font-size: 18px;
-    color: #5f6368;
+    padding: $spacing;
+    font-size: $font-size-medium;
     display: flex;
     align-items: center;
   }
 
   .search-button:hover {
-    color: #000;
+    color: black;
   }
 
   .search-container:focus-within {
@@ -57,36 +58,36 @@
     position: absolute;
     text-align: left;
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
-    border-radius: 0 0 20px 20px;
+    border-radius: 0 0 $spacing-xlarge $spacing-xlarge;
     visibility: visible;
 
     &.hide {
       visibility: hidden;
     }
     > div {
-      padding-bottom: 15px;
+      padding-bottom: $spacing-large;
     }
     .history {
-      color: purple;
+      color: $history-color;
       justify-content: space-between;
     }
     .active {
-      background-color: #ececec;
+      background-color: $light-grey;
       position: relative;
       &::before {
         content: "";
         position: absolute;
-        width: 4px;
+        width: $spacing;
         height: 100%;
-        background-color: #1818f79c; /* Add a visible color */
-        left: 0; /* Align to the left */
+        background-color: $primary-color;
+        left: 0;
         top: 0;
         z-index: 1;
         border-radius: 0 3px 3px 0;
       }
     }
     .autocomplete-item {
-      padding: 10px;
+      padding: $spacing-small;
       display: flex;
       align-items: center;
       & > div {
@@ -95,10 +96,10 @@
         cursor: pointer;
       }
       .feather {
-        margin-left: 10px;
+        margin-left: $spacing-large;
       }
       p {
-        margin-left: 18px;
+        margin-left: $spacing-large;
       }
       &:hover {
         background-color: #ececec;
