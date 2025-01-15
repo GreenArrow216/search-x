@@ -1,50 +1,47 @@
-# React + TypeScript + Vite
+# Search-X Application
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project fulfills all the basic requirements for the **Search-X** application as outlined by the recruiter. Additionally, I have taken the initiative to build a simple Node.js backend and connected it to a PostgreSQL database. Both the backend and database have been deployed via **Railway**, and the frontend has been deployed via **Netlify**.
 
-Currently, two official plugins are available:
+The backend repository can be found [here](https://github.com/GreenArrow216/search-x-backend).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
+##NOTE
 
-## Expanding the ESLint configuration
+To see pagination type **Re**. 
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+---
 
-- Configure the top-level `parserOptions` property like this:
+## ✅ Basic Requirements Completed
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+- ✅ **Input to type**
+- ✅ **Autocompletion without using any plugin**
+- ✅ **Key navigation**: Pressing **Enter** and navigating with the **mouse pointer** works as expected.
+- ✅ **Suggestions will be shown**: Only results containing the entered characters will be displayed instead of showing the suggestions that startsWith the query characters.
+- ✅ **History has been maintained and can be deleted.**
+- ✅ **Autofocus to the input field after initial load.**
+- ✅ **Show/Hide functionality** for the autocomplete suggestions.
+- ✅ **Maximum of ten rows** will be displayed in the suggestion dropdown.
+- ✅ **Result metadata is shown** for each search result.
+- ✅ **For showing Results used startsWith** to show the results that is starting with the searched query.
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+---
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## 🚀 Extras Completed
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+- ✅ **Pagination**: Pagination has been implemented to handle large datasets.
+- ✅ **Connected to a real database**: The app uses a live PostgreSQL database for storing search history and suggestions.
+- ✅ **Mimicked Google's UI**: The UI has been designed to mimic Google's search bar while keeping things simple and user-friendly.
+- ✅ **Dynamic icons for history/search items**: The search icon changes dynamically based on the type of item in the search history.
+- ✅ **No data page added**: A "No Data Found" page has been added for cases when no results are available.
+
+---
+
+## 🌐 Deployment Details
+
+- **Backend & Database**: Deployed via [Github][https://github.com/GreenArrow216/search-x-backend] [Database][https://search-x-backend-production.up.railway.app/sites]
+- **Frontend**: Deployed via [Netlify](https://gowthaman-ganesan-search-x.netlify.app) [github](https://github.com/GreenArrow216/search-x)
+
+---
+
+Thank you for reviewing my submission! I have enjoyed working on this project and look forward to discussing it further.
+
