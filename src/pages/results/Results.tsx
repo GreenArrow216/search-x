@@ -3,28 +3,44 @@ import { DataType } from "../../utils/fakeDb";
 import SearchBar from "../../components/searchBar/SearchBar";
 import { useEffect, useState } from "react";
 import "./Results.scss";
-import useGetData from "../../hooks/useGetData";
 import { SitesAPI } from "../../utils/constants";
 import ChevronLeft from "../../components/icons/ChevronLeft";
 import ChevronRight from "../../components/icons/ChevronRight";
 import SearchXLogo from "../../components/searchXLogo/SearchXLogo";
+import useLazyFetch from "../../hooks/useLazyFetch";
+import NoData from "../../components/noData/NoData";
 
 const Results = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") ?? "";
+  const navigate = useNavigate();
+  const itemsPerPage = 10;
+
+  // SETSTATES
   const [searchBarQuery, setSearchBarQuery] = useState<string>(query);
   const [results, setResults] = useState<DataType[]>();
-  const [loadingTime, setLoadingTime] = useState(0);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
-  const navigate = useNavigate()
+  const [loadingTime, setLoadingTime] = useState<number>(0);
+  const [apiLoadingTime, setApiLoadingTime] = useState<number>(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   const totalPages = Math.ceil((results?.length ?? 0) / itemsPerPage);
 
-  const { data } = useGetData(SitesAPI);
+  const { data, trigger, loading } = useLazyFetch(SitesAPI);
   const fakeDB: DataType[] = data ?? [];
-  
+
+  //USEEFFECTS
   useEffect(() => {
+    // to trigger the api and note the time
+    const startApiTime = performance.now();
+    trigger();
+    const endApiTime = performance.now();
+
+    setApiLoadingTime(endApiTime - startApiTime);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    // to update the result everytime user press enter or click on the suggestion
     const startTime = performance.now();
     const processData = async () => {
       const results = searchBarQuery
@@ -32,34 +48,33 @@ const Results = () => {
             item.title.toLowerCase().startsWith(searchBarQuery.toLowerCase())
           )
         : [];
-  
+
       const endTime = performance.now();
       setResults(results);
-      setLoadingTime(endTime - startTime);  
+      setLoadingTime(endTime - startTime + apiLoadingTime);
     };
-  
+
     processData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchBarQuery, data]);
 
+  //function to update the query after pressing enter on searchbar
   const updateQuery = (query: string) => {
     setSearchBarQuery(query);
   };
 
-  // Slice results for the current page
+  //for pagination
   const paginatedResults = results?.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
-  // Navigate to the next page
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prevPage) => prevPage + 1);
     }
   };
 
-  // Navigate to the previous page
   const goToPreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage((prevPage) => prevPage - 1);
@@ -73,7 +88,7 @@ const Results = () => {
   return (
     <div className="results-page">
       <div className="search-wrapper">
-        <h2 onClick={() => navigate('/')}>Search X</h2>
+        <h2 onClick={() => navigate("/")}>Search X</h2>
         <SearchBar
           defaultQuery={searchBarQuery ?? ""}
           updateQuery={updateQuery}
@@ -82,29 +97,42 @@ const Results = () => {
       </div>
       <div className="results-wrapper">
         <div className="search-results">
-          <p className="metadata">
-            {results?.length} results ({loadingTime.toFixed(2)} ms)
-          </p>
+          {paginatedResults?.length ? (
+            <p className="metadata">
+              {results?.length} results ({loadingTime.toFixed(2)} ms)
+            </p>
+          ) : (
+            <></>
+          )}
+
           <div className="results">
-            {paginatedResults?.map((item) => (
-              <div key={item.id} className="result-item">
-                <div>
-                  <div className="details">
-                    <div className="logo">
-                      <img src={item.image} alt={item.title} />
+            {paginatedResults?.length === 0 && !loading ? (
+              <NoData />
+            ) : (
+              paginatedResults?.map((item) => (
+                <div key={item.id} className="result-item">
+                  <div>
+                    <div className="details">
+                      <div className="logo">
+                        <img src={item.image} alt={item.title} />
+                      </div>
+                      <div>
+                        <p className="site">{item.site}</p>
+                        <p className="url">{item.url}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="site">{item.site}</p>
-                      <p className="url">{item.url}</p>
-                    </div>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {item.title}
+                    </a>
+                    <p className="desc">{item.description}</p>
                   </div>
-                  <a href={item.url} target="_blank" rel="noopener noreferrer">
-                    {item.title}
-                  </a>
-                  <p className="desc">{item.description}</p>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -133,7 +161,11 @@ const Results = () => {
           </div>
         </div>
         <div
-          className={`next ${currentPage === totalPages ? "hide" : "show"}`}
+          className={`next ${
+            currentPage === totalPages || paginatedResults?.length === 0
+              ? "hide"
+              : "show"
+          }`}
           onClick={goToNextPage}
         >
           <ChevronRight color={"#4285f4"} boxSize={20} />

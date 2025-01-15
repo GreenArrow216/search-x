@@ -23,17 +23,19 @@ const SearchBar = ({
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [query, setQuery] = useState<string>(defaultQuery);
-  const [dbData, setDBData] = useState<DataType[]>();
-  const [suggestions, setSuggestions] = useState<DataType[]>([]);
-  const [searchHistory, setSearchHistory] = useState<number[]>(historyItems);
-  const [activeIndex, setActiveIndex] = useState<number>(-1);
-  const [isFocused, setIsFocused] = useState<boolean>(false);
+  //USESTATES
+  const [query, setQuery] = useState<string>(defaultQuery); // update the input seach
+  const [dbData, setDBData] = useState<DataType[]>(); // get the data from api
+  const [suggestions, setSuggestions] = useState<DataType[]>([]); // update the suggestions as we type
+  const [searchHistory, setSearchHistory] = useState<number[]>(historyItems); // update the search history once user enters or clicked
+  const [activeIndex, setActiveIndex] = useState<number>(-1); // to navigate through the suggestions
+  const [isFocused, setIsFocused] = useState<boolean>(false); // to manually handle the focus to show and hide autocomplete div
 
-  const { data: dbDataFromAPI, trigger } = useLazyFetch(SitesAPI);
+  const { data: dbDataFromAPI, trigger } = useLazyFetch(SitesAPI); // used lazy fetch to trigger conditionally
 
   useEffect(() => {
     if (!location.pathname.includes("search")) {
+      // only trigger and focus when in search page
       document.getElementById("searchInput")?.focus();
       trigger();
     }
@@ -41,22 +43,27 @@ const SearchBar = ({
   }, []);
 
   useEffect(() => {
-    setDBData(sites);
+    // useEffect to manage the sites from parent component
+    if(location.pathname.includes("search")){ 
+      setDBData(sites);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sites]);
 
   useEffect(() => {
+    // useEffect to update dbData from api if it is triggered
     const fakeDb: DataType[] = dbDataFromAPI ?? [];
-    if (fakeDb?.length) {
-      setDBData(fakeDb);
-    }
+    setDBData(fakeDb);
   }, [dbDataFromAPI]);
 
   useEffect(() => {
+    // useEffect to update the suggestions when query is changed
     filterQueriedFromDB({ value: query });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   useEffect(() => {
+    // useEffect to update the searchHistory when the item has been clicked
     localStorage.setItem(HISTORY_ITEMS, JSON.stringify(searchHistory));
   }, [searchHistory]);
 
@@ -93,7 +100,7 @@ const SearchBar = ({
           navigate(`/search?q=${selectedSuggestion.title}`);
         }
       }
-      setIsFocused(false);
+      setIsFocused(false); // manually handling the focus and blur
       document.getElementById("searchInput")?.blur();
     }
   };
@@ -116,14 +123,18 @@ const SearchBar = ({
       const newHistory = [...searchHistory, item?.id];
       setSearchHistory(newHistory);
     }
+    setIsFocused(false); // manually handling the focus and blur
+    document.getElementById("searchInput")?.blur();
     if (item) {
-      navigate(`/search?q=${item.title}`);
-      document.getElementById("searchInput")?.blur();
       if (updateQuery) {
         updateQuery(item.title);
       }
+      navigate(`/search?q=${item.title}`);
     } else {
-      console.log("url not found in the db");
+      if (updateQuery) {
+        updateQuery(query);
+      }
+      navigate(`/search?q=${query}`);
     }
   };
 

@@ -1,6 +1,5 @@
 @use "../../styles/variables" as *;
 
-
 .search-bar {
   position: relative;
   width: 40%;
@@ -60,7 +59,7 @@
     box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.2);
     border-radius: 0 0 $spacing-xlarge $spacing-xlarge;
     visibility: visible;
-
+    z-index: 1;
     &.hide {
       visibility: hidden;
     }
