@@ -1,4 +1,5 @@
 @use '../../styles/variables' as *;
+@use "sass:list";
 
 $colors: #ff0000, #ff4000, #ff8000, #ffbf00, #bfff00, #00ff40, #00ffff, #0040ff,
   #8000ff, #bf00ff, #ff00bf, #ff0040, #000000, #808080;
@@ -8,12 +9,10 @@ $colors: #ff0000, #ff4000, #ff8000, #ffbf00, #bfff00, #00ff40, #00ffff, #0040ff,
     font-size: $font-size-large*2;
     margin: 0 10px;
     p {
-      @for $i from 1 through length($colors) {
+      @for $i from 1 through list.length($colors) {
         &:nth-child(#{$i}) {
-          color: nth($colors, $i);
+          color: list.nth($colors, $i);
         }
       }
     }
   }
-
-  
