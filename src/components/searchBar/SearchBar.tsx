@@ -1,19 +1,22 @@
 import { useState, useEffect, useRef } from "react";
-import { DataType, fakeDB } from "../../utils/fakeDb";
+import { DataType } from "../../utils/fakeDb";
 
 import "./SearchBar.scss";
 import { useLocation, useNavigate } from "react-router";
 import SearchIcon from "../icons/SearchIcon";
 import TrashIcon from "../icons/TrashIcon";
 import HistoryIcon from "../icons/HistoryIcon";
-import { HISTORY_ITEMS } from "../../utils/constants";
+import { HISTORY_ITEMS, SitesAPI } from "../../utils/constants";
+import useLazyFetch from "../../hooks/useLazyFetch";
 
 const SearchBar = ({
   defaultQuery = "",
   updateQuery,
+  sites = [],
 }: {
   defaultQuery?: string;
   updateQuery?: (arg: string) => void;
+  sites?: DataType[];
 }) => {
   const historyItems = JSON.parse(localStorage.getItem(HISTORY_ITEMS) ?? "[]");
   const searchBarRef = useRef<HTMLDivElement>(null);
@@ -21,17 +24,32 @@ const SearchBar = ({
   const location = useLocation();
 
   const [query, setQuery] = useState<string>(defaultQuery);
+  const [dbData, setDBData] = useState<DataType[]>();
   const [suggestions, setSuggestions] = useState<DataType[]>([]);
   const [searchHistory, setSearchHistory] = useState<number[]>(historyItems);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [isFocused, setIsFocused] = useState<boolean>(false);
 
+  const { data: dbDataFromAPI, trigger } = useLazyFetch(SitesAPI);
+
   useEffect(() => {
     if (!location.pathname.includes("search")) {
       document.getElementById("searchInput")?.focus();
+      trigger();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    setDBData(sites);
+  }, [sites]);
+
+  useEffect(() => {
+    const fakeDb: DataType[] = dbDataFromAPI ?? [];
+    if (fakeDb?.length) {
+      setDBData(fakeDb);
+    }
+  }, [dbDataFromAPI]);
 
   useEffect(() => {
     filterQueriedFromDB({ value: query });
@@ -81,10 +99,10 @@ const SearchBar = ({
   };
 
   const filterQueriedFromDB = ({ value = query }: { value?: string }) => {
-    const matches = fakeDB.filter((item) =>
+    const matches = dbData?.filter((item) =>
       item.title.toLowerCase().includes(value.toLowerCase())
     );
-    setSuggestions(matches.slice(0, 10));
+    setSuggestions(matches?.slice(0, 10) ?? []);
   };
 
   const removeFromHistory = (id: number) => {
@@ -93,7 +111,7 @@ const SearchBar = ({
   };
 
   const onSuggestionClick = (id: number) => {
-    const item = fakeDB.find((db) => db.id === id);
+    const item = dbData?.find((db) => db.id === id);
     if (item?.id && !searchHistory.includes(item.id)) {
       const newHistory = [...searchHistory, item?.id];
       setSearchHistory(newHistory);

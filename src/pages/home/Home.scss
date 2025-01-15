@@ -6,8 +6,8 @@
     display: flex;
     align-items: center;
     flex-direction: column;
-    margin-top: 10%;
     .search-text {
-      margin-bottom: 40px;
+      margin-bottom: $spacing-2xlarge;
+      margin-top: 10%;
     }
   }

@@ -7,9 +7,9 @@
   height: 100%;
   width: 100%;
   margin: auto;
-  padding: $spacing-xlarge 0;
   .search-wrapper {
     padding-bottom: $spacing-2xlarge;
+    padding-top: $spacing-large;
     border-bottom: 1px solid rgb(200, 200, 200);
     width: 100%;
     display: flex;
@@ -18,12 +18,14 @@
     margin-bottom: $spacing-large;
     h2 {
       margin-right: $spacing-2xlarge;
+      cursor: pointer;
     }
   }
   .results-wrapper {
     display: flex;
     justify-content: left;
     width: 70%;
+    flex: 1;
     .metadata {
       font-size: $font-size-xsmall;
       text-align: left;

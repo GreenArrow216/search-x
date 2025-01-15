@@ -1,4 +1,4 @@
-import { useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { DataType } from "../../utils/fakeDb";
 import SearchBar from "../../components/searchBar/SearchBar";
 import { useEffect, useState } from "react";
@@ -17,42 +17,29 @@ const Results = () => {
   const [loadingTime, setLoadingTime] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const navigate = useNavigate()
 
-  // Calculate total pages
   const totalPages = Math.ceil((results?.length ?? 0) / itemsPerPage);
 
   const { data } = useGetData(SitesAPI);
   const fakeDB: DataType[] = data ?? [];
-
+  
   useEffect(() => {
     const startTime = performance.now();
-
-    // First, the API request happens in the background (useGetData is assumed to handle async fetching)
     const processData = async () => {
-      // Assuming `data` is fetched, now filter it
       const results = searchBarQuery
         ? fakeDB.filter((item) =>
             item.title.toLowerCase().startsWith(searchBarQuery.toLowerCase())
           )
         : [];
   
-      // After filtering, measure the time and set results
       const endTime = performance.now();
       setResults(results);
-      setLoadingTime(endTime - startTime);  // This will give the total time, including the API call and filtering.
+      setLoadingTime(endTime - startTime);  
     };
   
     processData();
-    // const startTime = performance.now();
-    // const results = searchBarQuery
-    //   ? fakeDB.filter((item) =>
-    //       item.title.toLowerCase().startsWith(searchBarQuery.toLowerCase())
-    //     )
-    //   : [];
-    // setResults(results);
-    // const endTime = performance.now();
-    // setLoadingTime(endTime - startTime);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchBarQuery, data]);
 
   const updateQuery = (query: string) => {
@@ -79,17 +66,18 @@ const Results = () => {
     }
   };
 
-  const goToPage = (page:number) => {
-      setCurrentPage(page);
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
   };
 
   return (
     <div className="results-page">
       <div className="search-wrapper">
-        <h2>Search X</h2>
+        <h2 onClick={() => navigate('/')}>Search X</h2>
         <SearchBar
           defaultQuery={searchBarQuery ?? ""}
           updateQuery={updateQuery}
+          sites={fakeDB}
         />
       </div>
       <div className="results-wrapper">
@@ -129,7 +117,7 @@ const Results = () => {
           <p>Previous</p>
         </div>
         <div className="logo-text">
-         <SearchXLogo/>
+          <SearchXLogo />
           <div>
             {Array.from({ length: totalPages }, (_, index) => (
               <span
