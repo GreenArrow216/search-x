@@ -8,6 +8,7 @@ import TrashIcon from "../icons/TrashIcon";
 import HistoryIcon from "../icons/HistoryIcon";
 import { HISTORY_ITEMS, SitesAPI } from "../../utils/constants";
 import useLazyFetch from "../../hooks/useLazyFetch";
+import GlobeIcon from "../icons/GlobeIcon";
 
 const SearchBar = ({
   defaultQuery = "",
@@ -33,6 +34,14 @@ const SearchBar = ({
 
   const { data: dbDataFromAPI, trigger } = useLazyFetch(SitesAPI); // used lazy fetch to trigger conditionally
 
+  // USEEFFECTS
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, []);
+
   useEffect(() => {
     if (!location.pathname.includes("search")) {
       // only trigger and focus when in search page
@@ -44,10 +53,10 @@ const SearchBar = ({
 
   useEffect(() => {
     // useEffect to manage the sites from parent component
-    if(location.pathname.includes("search")){ 
+    if (location.pathname.includes("search")) {
       setDBData(sites);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sites]);
 
   useEffect(() => {
@@ -67,6 +76,40 @@ const SearchBar = ({
     localStorage.setItem(HISTORY_ITEMS, JSON.stringify(searchHistory));
   }, [searchHistory]);
 
+  const clickedOnTypedQuery = () => {
+    if (query.includes("http")) {
+      window.location.href = query;
+    } else {
+      navigate(`/search?q=${query}`);
+      if (updateQuery) {
+        updateQuery(query);
+      }
+    }
+    focusOutInput();
+  };
+
+  const clickedOnSuggestions = (index: number) => {
+    const selectedSuggestion = suggestions[index - 1];
+    console.log({ selectedSuggestion, index });
+    if (selectedSuggestion) {
+      if (!searchHistory.includes(selectedSuggestion.id)) {
+        const newHistory = [...searchHistory, selectedSuggestion.id];
+        setSearchHistory(newHistory);
+      }
+      if (updateQuery) {
+        updateQuery(selectedSuggestion.title);
+      }
+      setQuery(selectedSuggestion.title);
+      navigate(`/search?q=${selectedSuggestion.title}`);
+    }
+    focusOutInput();
+  };
+
+  const focusOutInput = () => {
+    setIsFocused(false); // manually handling the focus and blur
+    document.getElementById("searchInput")?.blur();
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (!suggestionsPresent && query.trim() === "") return;
 
@@ -81,27 +124,11 @@ const SearchBar = ({
 
       if (activeIndex === 0) {
         // Enter pressed on the query itself
-        navigate(`/search?q=${query}`);
-        if (updateQuery) {
-          updateQuery(query);
-        }
+        clickedOnTypedQuery();
       } else if (activeIndex > 0) {
         // Enter pressed on a suggestion
-        const selectedSuggestion = suggestions[activeIndex - 1];
-        if (selectedSuggestion) {
-          if (!searchHistory.includes(selectedSuggestion.id)) {
-            const newHistory = [...searchHistory, selectedSuggestion.id];
-            setSearchHistory(newHistory);
-          }
-          if (updateQuery) {
-            updateQuery(selectedSuggestion.title);
-          }
-          setQuery(selectedSuggestion.title);
-          navigate(`/search?q=${selectedSuggestion.title}`);
-        }
+        clickedOnSuggestions(activeIndex);
       }
-      setIsFocused(false); // manually handling the focus and blur
-      document.getElementById("searchInput")?.blur();
     }
   };
 
@@ -117,26 +144,11 @@ const SearchBar = ({
     setSearchHistory(newHistory);
   };
 
-  const onSuggestionClick = (id: number) => {
-    const item = dbData?.find((db) => db.id === id);
-    if (item?.id && !searchHistory.includes(item.id)) {
-      const newHistory = [...searchHistory, item?.id];
-      setSearchHistory(newHistory);
-    }
-    setIsFocused(false); // manually handling the focus and blur
-    document.getElementById("searchInput")?.blur();
-    if (item) {
-      if (updateQuery) {
-        updateQuery(item.title);
-      }
-      setQuery(item.title);
-      navigate(`/search?q=${item.title}`);
+  const onSuggestionClick = (index: number) => {
+    if (index === 0) {
+      clickedOnTypedQuery();
     } else {
-      if (updateQuery) {
-        updateQuery(query);
-      }
-      setQuery(query)
-      navigate(`/search?q=${query}`);
+      clickedOnSuggestions(index);
     }
   };
 
@@ -153,14 +165,17 @@ const SearchBar = ({
     }
   };
 
-  useEffect(() => {
-    document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
-  }, []);
+  const returnIcon = (item: DataType | { id: number; title: string; }) => {
+    if (item.title.includes("http")) {
+      return <GlobeIcon color={"#868686"} boxSize={20} />;
+    } else if (isAlreadySearched(item.id)) {
+      return <HistoryIcon color="#868686" boxSize={20} />;
+    } else {
+      return <SearchIcon color={"#868686"} boxSize={20} />;
+    }
+  };
 
-  const suggestionsPresent = suggestions.length > 0 && query.length > 0;
+  const suggestionsPresent = query.length > 0;
   const showSuggestions = isFocused && suggestionsPresent;
 
   return (
@@ -198,16 +213,8 @@ const SearchBar = ({
               } ${isAlreadySearched(item.id) ? "history" : ""}`}
             >
               <div>
-                {item.id === -1 ? (
-                  <SearchIcon color={"#868686"} boxSize={20} />
-                ) : isAlreadySearched(item.id) ? (
-                  <HistoryIcon color="#868686" boxSize={20} />
-                ) : (
-                  <SearchIcon color={"#868686"} boxSize={20} />
-                )}
-                <p onMouseDown={() => onSuggestionClick(item.id)}>
-                  {item.title}
-                </p>
+                {returnIcon(item)}
+                <p onMouseDown={() => onSuggestionClick(index)}>{item.title}</p>
               </div>
               {isAlreadySearched(item.id) && item.id !== -1 && (
                 <div

@@ -26,19 +26,19 @@ const Results = () => {
   const totalPages = Math.ceil((results?.length ?? 0) / itemsPerPage);
 
   const { data, trigger, loading } = useLazyFetch(SitesAPI);
-  const fakeDB: DataType[] = data ?? [];
+  const fakeDB: DataType[] = data ?? []; // usually we don't need this, in a proper development the types will be handled by graphql-codegen, apollo and graphql if we are using graphql queries
 
   //USEEFFECTS
   useEffect(() => {
     // to trigger the api and note the time
-    const measureApiTime = async() => {
+    const measureApiTime = async () => {
       const startApiTime = performance.now();
       await trigger();
       const endApiTime = performance.now();
       setApiLoadingTime(endApiTime - startApiTime);
-    }
+    };
 
-    measureApiTime()   
+    measureApiTime();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
