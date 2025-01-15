@@ -129,11 +129,13 @@ const SearchBar = ({
       if (updateQuery) {
         updateQuery(item.title);
       }
+      setQuery(item.title);
       navigate(`/search?q=${item.title}`);
     } else {
       if (updateQuery) {
         updateQuery(query);
       }
+      setQuery(query)
       navigate(`/search?q=${query}`);
     }
   };
